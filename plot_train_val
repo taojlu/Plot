@@ -1,0 +1,69 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon May 20 10:27:05 2024
+
+@author: ThinkPad X1
+"""
+
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.ticker import MultipleLocator
+
+# Define datasets and their corresponding numbers
+datasets = ['GlaS', 'MoNuSeg']
+train_numbers = [85, 37]
+test_numbers = [80, 14]
+
+# Define annotations and corresponding color for each dataset
+annotations_1 = ['train', 'test']
+colors_1 = ['#f5bd98', '#ffe980']  # Each annotation has a unique color
+
+# Create the figure and axes with a longer x-axis
+fig, ax = plt.subplots(figsize=(4, 3), dpi=1000)  # Increase the width of the canvas
+
+# Adjusting positions
+width = 0.2  # Width of each annotation bar
+gap = 0.3  # Gap between the two datasets
+offset_1 = width * len(annotations_1) / 2  # Center offset for datasets
+
+center_positions = []  # To store the center positions for the x-ticks
+
+# Draw bars for each dataset
+for i, dataset in enumerate(datasets):
+    # Adjust the position of the second dataset
+    dataset_position = i * (gap + width * len(annotations_1))
+    # Positions for training and testing bars
+    positions = []
+    for j, (num, color) in enumerate(zip([train_numbers[i], test_numbers[i]], colors_1)):
+        position = dataset_position + j * width - offset_1
+        ax.bar(position, num, width=width, color=color, label=annotations_1[j] if i == 0 else "")
+        positions.append(position)
+        # Add text labels
+        ax.text(position, num + 2, f'{num}', ha='center', va='bottom')
+    center_positions.append(np.mean(positions))
+
+# Set properties for the plot
+ax.set_ylabel('Count')
+# ax.set_title('Dataset Annotations and Total Numbers')
+ax.set_xticks(center_positions)  # Set x-ticks to the center positions of each dataset
+ax.set_xticklabels(datasets)
+
+# Set y-axis tick interval and range
+ax.yaxis.set_major_locator(MultipleLocator(15))
+ax.set_ylim(0, 100)  # Set the y-axis to start at 0
+
+# Adjust x-axis limits to reduce space between bars
+ax.set_xlim(-0.5, max(center_positions) + 0.5)
+
+# Move the legend inside the plot
+handles, labels = ax.get_legend_handles_labels()
+by_label = dict(zip(labels, handles))
+ax.legend(by_label.values(), by_label.keys(), loc='upper right', bbox_to_anchor=(1, 1))
+
+# save_path = '/root/nfs/gaobin/wt/Paper_Plot/CerviAI'
+# if not os.path.exists(save_path):
+#     os.makedirs(save_path)
+image_name = 'data_1_2.png'
+# plt.savefig(os.path.join(save_path, image_name))
+# Show the plot
+plt.show()
